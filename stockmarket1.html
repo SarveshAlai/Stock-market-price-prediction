@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockPredict - Market Prediction Tool</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #ca8a04;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--dark);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 2rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .hero {
+            background-color: white;
+            border-radius: 10px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .feature-card h3 {
+            margin: 1rem 0;
+            color: var(--dark);
+        }
+        
+        .feature-card p {
+            color: var(--secondary);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+        
+        .prediction-tool {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+        }
+        
+        .prediction-tool h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--dark);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .chart {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .chart-canvas {
+            width: 100%;
+            height: 300px;
+            background-color: #f8fafc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+        }
+        
+        .results {
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .result-card {
+            background-color: #f0f9ff;
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+        
+        .result-up {
+            color: var(--success);
+        }
+        
+        .result-down {
+            color: var(--danger);
+        }
+        
+        .testimonials {
+            margin-bottom: 3rem;
+        }
+        
+        .testimonials h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--dark);
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: white;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section ul li a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #334155;
+            color: #cbd5e1;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+            }
+            
+            nav ul li {
+                margin-left: 1rem;
+            }
+            
+            .hero {
+                padding: 2rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Stock<span>Predict</span></div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#prediction">Prediction Tool</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section id="home" class="container">
+            <div class="hero">
+                <h1>Advanced Stock Market Prediction</h1>
+                <p>Make data-driven investment decisions with our AI-powered stock market prediction tools.</p>
+                <a href="#prediction" class="btn btn-primary">Try Prediction Tool</a>
+            </div>
+            
+            <div id="features" class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Technical Analysis</h3>
+                    <p>Advanced algorithms analyze historical price data and technical indicators to identify patterns and trends.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered</h3>
+                    <p>Machine learning models trained on vast amounts of financial data to predict future price movements.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📰</div>
+                    <h3>Sentiment Analysis</h3>
+                    <p>Analyze news articles, social media, and market sentiment to gauge market psychology.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="prediction" class="container">
+            <div class="prediction-tool">
+                <h2>Stock Price Prediction Tool</h2>
+                
+                <form id="prediction-form">
+                    <div class="form-group">
+                        <label for="stock-symbol">Stock Symbol</label>
+                        <input type="text" id="stock-symbol" class="form-control" placeholder="e.g., AAPL, MSFT, GOOGL">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prediction-timeframe">Prediction Timeframe</label>
+                        <select id="prediction-timeframe" class="form-control">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="analysis-model">Analysis Model</label>
+                        <select id="analysis-model" class="form-control">
+                            <option value="technical">Technical Analysis</option>
+                            <option value="fundamental">Fundamental Analysis</option>
+                            <option value="sentiment">Sentiment Analysis</option>
+                            <option value="combined">Combined Approach</option>
+                        </select>
+                    </div>
+                    
+                    <button type="button" onclick="simulatePrediction()" class="btn btn-primary">Generate Prediction</button>
+                </form>
+                
+                <div class="charts-container">
+                    <div class="chart">
+                        <div class="chart-title">Historical Price & Prediction</div>
+                        <div class="chart-canvas" id="price-chart">Chart will appear here after prediction</div>
+                    </div>
+                </div>
+                
+                <div class="results" id="prediction-results">
+                    <h3>Prediction Results</h3>
+                    
+                    <div class="result-card">
+                        <div>Predicted Price (7 days):</div>
+                        <div class="result-value" id="prediction-7d">$0.00</div>
+                        <div id="change-7d">0.00%</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div>Predicted Price (30 days):</div>
+                        <div class="result-value" id="prediction-30d">$0.00</div>
+                        <div id="change-30d">0.00%</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div>Confidence Score:</div>
+                        <div class="result-value" id="confidence-score">0%</div>
+                        <div>Based on historical accuracy of the selected model</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="container">
+            <div class="testimonials">
+                <h2>What Our Users Say</h2>
+                
+                <div class="testimonial-grid">
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            "StockPredict's AI models helped me make better investment decisions. The technical analysis feature is particularly useful."
+                        </div>
+                        <div class="testimonial-author">- Michael R., Professional Trader</div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            "As a beginner investor, I found this tool incredibly helpful to understand market trends and make informed decisions."
+                        </div>
+                        <div class="testimonial-author">- Sarah L., Retail Investor</div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            "The sentiment analysis feature gives me insights I couldn't get elsewhere. It's now an essential part of my investment strategy."
+                        </div>
+                        <div class="testimonial-author">- David T., Fund Manager</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About StockPredict</h3>
+                <p>We provide advanced stock market prediction tools powered by AI and machine learning to help investors make data-driven decisions.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#prediction">Prediction Tool</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li>Email: info@stockpredict.com</li>
+                    <li>Phone: (555) 123-4567</li>
+                    <li>Address: 123 Market St, Financial District</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 StockPredict. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script>
+        function simulatePrediction() {
+            const stockSymbol = document.getElementById('stock-symbol').value;
+            
+            if (!stockSymbol) {
+                alert('Please enter a stock symbol');
+                return;
+            }
+            
+            // In a real application, this would make an API call to a backend
+            // For demo purposes, we'll simulate the prediction with random data
+            
+            // Show loading state
+            document.getElementById('price-chart').innerHTML = 'Loading prediction...';
+            
+            // Simulate API call with timeout
+            setTimeout(() => {
+                // Generate random prediction data
+                const currentPrice = Math.floor(Math.random() * 500) + 50;
+                const prediction7d = (currentPrice * (1 + (Math.random() * 0.2 - 0.1))).toFixed(2);
+                const prediction30d = (currentPrice * (1 + (Math.random() * 0.4 - 0.2))).toFixed(2);
+                const change7d = (((prediction7d / currentPrice) - 1) * 100).toFixed(2);
+                const change30d = (((prediction30d / currentPrice) - 1) * 100).toFixed(2);
+                const confidenceScore = Math.floor(Math.random() * 30) + 60; // 60-90%
+                
+                // Update the chart (in a real app, this would be a proper chart)
+                const chartHtml = createMockChart(stockSymbol, currentPrice, prediction7d, prediction30d);
+                document.getElementById('price-chart').innerHTML = chartHtml;
+                
+                // Update prediction results
+                document.getElementById('prediction-7d').textContent = `$${prediction7d}`;
+                document.getElementById('prediction-30d').textContent = `$${prediction30d}`;
+                document.getElementById('confidence-score').textContent = `${confidenceScore}%`;
+                
+                // Update change percentages with appropriate styling
+                const change7dElement = document.getElementById('change-7d');
+                change7dElement.textContent = change7d > 0 ? `+${change7d}%` : `${change7d}%`;
+                change7dElement.className = change7d > 0 ? 'result-up' : 'result-down';
+                
+                const change30dElement = document.getElementById('change-30d');
+                change30dElement.textContent = change30d > 0 ? `+${change30d}%` : `${change30d}%`;
+                change30dElement.className = change30d > 0 ? 'result-up' : 'result-down';
+                
+                // Show results
+                document.getElementById('prediction-results').style.display = 'block';
+                
+            }, 1500);
+        }
+        
+        function createMockChart(symbol, currentPrice, prediction7d, prediction30d) {
+            // This is a placeholder for a real chart library like Chart.js
+            // In a real application, you'd use a proper charting library
+            
+            const chartStyle = `
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                width: 100%;
+                background: #f8fafc;
+                border-radius: 5px;
+                padding: 15px;
+            `;
+            
+            const headerStyle = `
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            `;
+            
+            const mockChartStyle = `
+                flex: 1;
+                background: linear-gradient(180deg, rgba(37, 99, 235, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+                border-radius: 5px;
+                position: relative;
+                overflow: hidden;
+            `;
+            
+            const lineStyle = `
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: flex-end;
+            `;
+            
+            const dateLabelsStyle = `
+                display: flex;
+                justify-content: space-between;
+                margin-top: 10px;
+                color: #64748b;
+                font-size: 12px;
+            `;
+            
+            // Create random points for the chart line
+            const points = [];
+            const numPoints = 30;
+            
+            for (let i = 0; i < numPoints; i++) {
+                const variance = Math.random() * 0.1 - 0.05;
+                const factor = 1 + variance;
+                const height = 30 + Math.random() * 40; // Random height between 30-70%
+                points.push(`<div style="flex: 1; height: ${height}%; background-color: ${factor > 1 ? '#2563eb' : '#2563eb'}; width: 3px; margin: 0 2px;"></div>`);
+            }
+            
+            return `
+                <div style="${chartStyle}">
+                    <div style="${headerStyle}">
+                        <div><strong>${symbol}</strong> - Current Price: $${currentPrice}</div>
+                        <div>AI Prediction</div>
+                    </div>
+                    <div style="${mockChartStyle}">
+                        <div style="${lineStyle}">${points.join('')}</div>
+                    </div>
+                    <div style="${dateLabelsStyle}">
+                        <div>Last Month</div>
+                        <div>Today</div>
+                        <div>7 Days</div>
+                        <div>30 Days</div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
